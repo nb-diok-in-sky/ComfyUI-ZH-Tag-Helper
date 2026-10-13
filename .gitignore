@@ -5,3 +5,4 @@ tools/build/
 # Optional local add-ons, not part of this repo
 explorer/
 lora_styles/
+tools/review/

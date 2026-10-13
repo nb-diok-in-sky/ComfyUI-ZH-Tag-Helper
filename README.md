@@ -56,6 +56,7 @@ python tools/build_tag_categories.py    # 分类 -> web/tag_categories.json
 
 - 手工翻译在 `tools/zh_extra.tsv`：补翻译表缺的中文，也用来改正翻错的（优先于翻译表）。
 - 分错类的词写进 `tools/overrides.tsv`（`英文标签<TAB>大类/子类`），重新跑一遍即可。
+- 想让 AI 帮忙逐类检查：`python tools/review_export.py` 导出清单，把 [docs/AI_REVIEW_GUIDE.md](docs/AI_REVIEW_GUIDE.md) 交给它；做完用 `python tools/review_check.py` 检查格式后人工审核合并。
 - 违禁词规则在 `tools/build_zh_tags.py`，分类规则在 `tools/build_tag_categories.py`。
 
 ## 数据来源
