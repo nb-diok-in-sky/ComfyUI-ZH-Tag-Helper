@@ -1,6 +1,6 @@
 # Step 1 of the word list build: tools/build/danbooru_tags_zh.csv (tag, category, post count, aliases).
 # Adds Chinese aliases (from ffdkj Danbooru zh translation table, tag_zh.sqlite) to every tag of
-# danbooru_tags.csv; tags the table has no Chinese for come from zh_extra.tsv (hand-written).
+# danbooru_tags.csv; zh_extra.tsv (hand-written) fills missing translations and overrides wrong ones.
 # Youth-coded tags keep their Chinese but every Chinese alias is prefixed with a 违禁词 marker:
 # BAN for the loli/shota family (never use), WARN for the rest (SFW-only), so people and AI see it.
 # Usage: python tools/build_zh_tags.py   (sources from tools/fetch_sources.py; step 2 is build_tag_categories.py)
@@ -72,8 +72,7 @@ for line in open(EXTRA_TSV, encoding="utf-8"):
     if line.startswith("#") or "\t" not in line:
         continue
     t, c = line.rstrip("\n").split("\t", 1)
-    if not HAN.search(zh.get(t, "")):
-        zh[t] = c
+    zh[t] = c
 rows = []
 for r in csv.reader(open(BASE, encoding="utf-8")):
     if len(r) < 3 or not r[2].isdigit():
@@ -81,7 +80,9 @@ for r in csv.reader(open(BASE, encoding="utf-8")):
     tag, cat, cnt = r[0], r[1], r[2]
     aliases = [a for a in (r[3].split(",") if len(r) > 3 and r[3] else []) if a]
     if tag in zh:
-        aliases = [a for a in zh_aliases(zh[tag]) if a not in aliases] + aliases
+        # The translation goes first (it becomes the display name), even if the base list already has it further down.
+        first = zh_aliases(zh[tag])
+        aliases = first + [a for a in aliases if a not in first]
     aliases = EXTRA.get(tag, []) + aliases
     mark = banned(tag, cat)
     if mark:

@@ -16,6 +16,12 @@ TOOLS = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(TOOLS, "build/danbooru_tags_zh.csv")
 OUT = os.path.join(os.path.dirname(TOOLS), "web/tag_categories.json")
 GROUPS = os.path.join(TOOLS, "sources/danbooru_groups")
+# Hand fixes for tags the keyword rules get wrong: tag<TAB>大类/子类
+OVERRIDES = {
+    t: tuple(c.split("/"))
+    for t, c in (line.rstrip("\n").split("\t") for line in open(os.path.join(TOOLS, "overrides.tsv"), encoding="utf-8")
+                 if line.strip() and not line.startswith("#"))
+}
 
 # Same markers as build_zh_tags.py.
 BAN = "🚫违禁词·"
@@ -51,14 +57,28 @@ R18_SUB = [
     ("BDSM·束缚", r"bdsm|bondage|(^|_)bound(_|$)|restrained|shibari|(^|_)gag(_|$)|gagged|ballgag|bit_gag|spreader_bar|tied_up|^chained|shackles|handcuffs|pillory|dominatrix|femdom|(^|_)slave|(^|_)whip($|_)|whipping|riding_crop|torture|hogtie|frogtie|box_tie|wooden_horse|nipple_clamps|gimp_"),
     ("情趣用品", r"dildo|vibrator|sex_toy|butt_plug|anal_beads|condom|tenga|onahole|hitachi_magic_wand|strap-on|fleshlight|sex_machine|aphrodisiac|aneros|anal_tail|yes-no_pillow"),
     ("色情服装", r"crotchless|cupless|nippleless|pasties|maebari|reverse_bunnysuit|reverse_outfit|sling_bikini|microkini|slingshot_swimsuit|see-through_(panties|bra)|pussy_cutout|anus_cutout|breastless|nipple_cutout|crotch_cutout|anal_ball_wear|chastity"),
-    ("走光·偷窥", r"upskirt|pantyshot|downblouse|downpants|panty_peek|voyeur|peeping|exhibitionism|public_(nudity|indecency|use|sex)|flashing|wardrobe_malfunction|nip_slip|nipple_slip|areola_slip|panties_aside|panty_pull|skirt_lift|clothes_lift|shirt_lift|dress_lift|bra_lift|lifting_own_clothes|^presenting|_exposure$"),
-    ("性器官", r"penis|pussy|vagina|vulva|labia|clitoris|testicles|scrotum|foreskin|glans|erection|nipples?($|_)|areola|(^|_)anus|pubic_hair|female_pubic|male_pubic|uterus|cervix|womb|cameltoe|(^|_)bulge|cleft_of_venus|perineum|urethra|^ovum$|sperm_cell"),
+    ("走光·偷窥", r"upskirt|pantyshot|downblouse|downpants|panty_peek|voyeur|peeping|exhibitionism|public_(nudity|indecency|use|sex)|flashing|wardrobe_malfunction|nip_slip|nipple_slip|areola_slip|panties_aside|panty_pull|skirt_lift|clothes_lift|shirt_lift|dress_lift|bra_lift|lifting_own_clothes|^presenting|_exposure$|upshorts|upshirt"),
+    ("性器官", r"penis|pussy|vagina|vulva|labia|clitoris|testicles|scrotum|foreskin|glans|erection|nipples?($|_)|areolae?|(^|_)anus|pubic_hair|female_pubic|male_pubic|uterus|cervix|womb|cameltoe|(^|_)bulge|cleft_of_venus|perineum|urethra|^ovum$|sperm_cell"),
     ("裸露", r"(^|_)nude|naked(?!_choke)|topless|bottomless|breasts_out|undressing|no_panties|no_bra|nudity|undressed|stripping|striptease"),
-    ("性行为", r"(^|_)sex($|_)|fellatio|cunnilingus|irrumatio|paizuri|handjob|footjob|thighjob|buttjob|masturbation|fingering|fisting|rimjob|deepthroat|penetration|insertion|groping|molestation|tribadism|frottage|(^|_)rape($|_)|^raped|gangbang|threesome|orgy|group_sex|^hetero$|yaoi|futanari|tentacle_sex|breast_sucking|nipple_(tweak|play|licking|suck)|licking_(penis|nipple|pussy|anus|testicle)|(^|_)oral($|_)|^69$|(^|_)anal($|_)|vaginal|orgasm|impregnation|fertilization|incest|netorare|(^|_)ntr($|_)|prostitution|x-ray|cross-section|internal_cumshot|breast_grab|ass_grab|crotch_grab|grabbing_(another's|own)_(breast|ass)|pov_crotch|imminent_(rape|sex|penetration|fellatio|anal|vaginal|cunnilingus|paizuri)|shimaidon|just_the_tip|^plap$|uncommon_stimulation|interracial|interspecies|pokephilia|kodomo_doushi"),
+    ("性行为", r"(^|_)sex($|_)|fellatio|cunnilingus|irrumatio|paizuri|handjob|footjob|thighjob|buttjob|masturbation|fingering|fisting|rimjob|deepthroat|penetration|insertion|groping|molestation|tribadism|frottage|(^|_)rape($|_)|^raped|gangbang|threesome|orgy|group_sex|^hetero$|yaoi|futanari|tentacle_sex|breast_sucking|nipple_(tweak|play|licking|suck)|licking_(penis|nipple|pussy|anus|testicle)|(^|_)oral($|_)|^69$|(^|_)anal($|_)|vaginal|orgasm|impregnation|fertilization|incest|netorare|(^|_)ntr($|_)|prostitution|x-ray|cross-section|internal_cumshot|breast_grab|ass_grab|crotch_grab|grabbing_(another's|own)_(breast|ass)|pov_crotch|imminent_(rape|sex|penetration|fellatio|anal|vaginal|cunnilingus|paizuri)|shimaidon|just_the_tip|^plap$|uncommon_stimulation|grinding|anilingus|bootjob|interracial|interspecies|pokephilia|kodomo_doushi"),
     ("性癖·其他", r"hypnosis|instant_loss|corruption|pornography|^abuse$|self-harm|(^|_)gaping|sexual_|foreplay|in_heat|aroused_nosebleed|eargasm|arousal|shoejob|kupaa|ero_guro|prolapse|wedgie|drugged|^virgin$|^nudist|torso_flash|stripper|_leash$|strip_game|pubic_|testicle|half-erect|oyakodon|lolidom|lolicon|clitoral|(^|_)raped?($|_)|breasts_on_tray|pregnancy_test|implied_pregnancy|accidental_pervert"),
 ]
-R18_WORDS = re.compile("|".join(p for _, p in R18_SUB))
-R18_SUB = [(n, re.compile(p)) for n, p in R18_SUB]
+
+
+# A keyword only counts when it covers whole words of the tag (words split at _ - ( ) / : . ' and spaces),
+# allowing plural / verb endings: "laughing" hits laugh, but "houndstooth" is not tooth, "what" is not hat,
+# "chair" is not hair, "amusement_park" is not semen. Done inside the regex so the engine backtracks to a
+# longer alternative (vagina -> vaginal) instead of giving up. Run-together compounds (miniskirt, sunglasses)
+# have to be listed in the rules explicitly.
+_S = r"_\-()/:.' "
+
+
+def words(pattern):
+    return re.compile(rf"(?:^|(?<=[{_S}])|(?=[{_S}]))(?:{pattern})(?:$|(?=[{_S}])|(?<=[{_S}])|(?:e?s|e?d|ing)(?=$|[{_S}]))")
+
+
+R18_WORDS = words("|".join(p for _, p in R18_SUB))
+R18_SUB = [(n, words(p)) for n, p in R18_SUB]
 
 # ---------- keyword rules (general tags) ----------
 COLORS = ("aqua|black|blonde|blue|brown|green|grey|gray|orange|pink|purple|red|white|yellow|silver|gold|light_blue|dark_blue|"
@@ -69,6 +89,45 @@ ANIMALS = ("cat|dog|fox|wolf|rabbit|bunny|bear|mouse|tiger|lion|cow|horse|pig|sh
            "butterfly|bee|spider|lizard|turtle|crab|hedgehog|leopard|cheetah|jaguar|hyena|kitsune|tanuki|weasel|elephant|giraffe|zebra|"
            "kangaroo|koala|sloth|alpaca|llama|camel|boar|ox|bull|reindeer|moose|lynx|ocelot|serval|caracal|puppy|kitten")
 RULES = [
+    # 整类的写法先判断：拿着 / 对他人 / 对自己头发的动作、XX日、XX背景、打码、画面裁切
+    ("表情动作", "拿着东西", r"^holding(_|$)|_in_hand$|^carrying_(?!over)|_in_mouth$"),
+    ("表情动作", "多人互动", r"another's"),
+    ("表情动作", "手部动作", r"^(hands?|fingers?)_(on|in|over|under|between|behind|around|to|together)_|^covering_|^hair_flip$|"
+                         r"^(tucking|twirling|brushing|braiding|cutting|ruffling|bunching|playing_with|smelling|kissing|biting|eating|"
+                         r"tying|adjusting|pulling|grabbing)_(own_)?hair$"),
+    ("表情动作", "手势", r"^thumbs?_(up|down)$|^index_fingers?_(raised|together)$|^gyaru_v$"),
+    ("环境", "季节·节日", r"_day$"),
+    ("画面", "背景", r"_background$"),
+    ("画面", "画质·元数据", r"_censor(ing|ed)?$|^censored(_|$)"),
+    ("画面", "文字·符号", r"^no_\w+_sign$|^no_symbol$|^no_smoking$"),
+    ("镜头", "景别", r"_out_of_frame$|^cropped_(legs|torso|arms|head|shoulders|feet|hands)$"),
+    # 连写的复合词，按整词匹配时认不出来，单独列出
+    ("服饰", "裙子", r"(mini|micro|over|under|hoop)skirts?|petticoat"),
+    ("服饰", "外套·披风", r"(over|tail|sur|rain|trench|lab|duffel|pea|great)coats?|coattails|straitjacket|bathrobe"),
+    ("服饰", "连衣裙", r"microdress|minidress|sundress"),
+    ("服饰", "眼镜·面具", r"sunglasses|eyeglasses"),
+    ("服饰", "帽子·头盔", r"headscarf"),
+    ("服饰", "上衣", r"nightshirt|shirttail"),
+    ("物品", "交通工具", r"wheelchair"),
+    ("服饰", "鞋子", r"shoelaces"),
+    ("服饰", "花纹·材质", r"^embroider(y|ed)$"),
+    ("画面", "光照", r"(back|side|under|rim|top)lighting|searchlight|sparkler|skylight|lampshade"),
+    ("场景", "户外·城市", r"cityscape"),
+    ("场景", "户外·自然", r"mountainous_horizon"),
+    ("场景", "家具·门窗", r"(arm|easy|deck|beach|camping|rocking|lounge|office|swivel|gaming|folding|wooden|lifeguard|bean_bag)_?chair|windowsill|doorknob|doormat"),
+    ("物品", "电子设备", r"headphones|earphones"),
+    ("物品", "食物·饮料", r"^(straw|blue|rasp|black)berr(y|ies)$"),
+    ("人物", "面部", r"cheekbones"),
+    ("服饰", "衣着状态", r"^partially_(un\w+|open|removed)$"),
+    ("服饰", "制服·职业装", r"_maid$"),
+    ("人物", "身份·职业", r"^(husband|wife)_and_(wife|husband)$"),
+    ("服饰", "泳装·紧身衣", r"swimwear"),
+    ("服饰", "帽子·头盔", r"bonnets?|earmuffs|toque_blanche"),
+    ("人物", "发型", r"hairstyles?$"),
+    ("物品", "武器", r"lightsabers?|^(energy|beam|laser|plasma|ray|glowing)_(guns?|swords?|cannons?|rifles?|weapons?|spears?|shields?|blades?)$|^light_machine_gun$|cleaver|^taser$|^hilt$|_sheath$"),
+    ("物品", "动物", r"^(white|black|grey|brown|red|blue|golden|robot|small|giant|baby)_(%s)s?$|^seabird|^tyrannosaurus|^pterosaur" % ANIMALS),
+    ("环境", "植物·花", r"^(willow|conifer|weeds|venus_flytrap|mandrake)$"),
+    ("镜头", "角度", r"_pov$"),
     # 其他
     ("其他", "网络梗", r"_\(meme\)$|^meme$"),
     ("画面", "画质·元数据", r"^\d{4}$|^(19|20)\d0s$|absurdres|highres|lowres|commentary|translat|_request$|^bad_|_artifacts$|^jpeg|watermark|signature|artist_name|dated|web_address|twitter_username|pixiv_id|patreon|copyright_name|character_name|logo$"),
@@ -124,11 +183,8 @@ RULES = [
     ("物品", "武器", r"^minigun|^railgun|^artillery|^harpoon|^throwing_needles|^boomerang|^paralyzer|^hook$|^smoking_barrel|^shoulder_cannon|^adapted_turret|^torpedo_tubes|^funnels_\(gundam\)|^gunpod|^particle_cannon|^z_saber|^metal_baseball_bat|^hylian_shield"),
     ("物品", "食物·饮料", r"^red_wine|^hot_chocolate|^mint_chocolate|^hotpot|^ikayaki|^mitarashi_dango|^double_scoop|^strong_zero|^guarana|^in_bowl"),
     ("物品", "动物", r"^chocobo|^white_dog|^multiple_cats|^red_panda|^great_pyrenees|^sacabambaspis|^pikmin|^chao_\(sonic\)|^bangboo|^critter_pick|^mini_dragon|^coral_reef"),
-    ("镜头", "景别", r"_out_of_frame$|^cropped_"),
     ("镜头", "焦点", r"_focus$"),
     ("人物", "身体其他部位", r"^shoulder_blades$|^navel$|^stomach$|^belly$|^midriff_peek$"),
-    # 拿着东西
-    ("表情动作", "拿着东西", r"^holding(_|$)|_in_hand$|^carrying_(?!over)|_in_mouth$"),
     # 人物
     ("人物", "人数·性别", r"^\d+(girls?|boys?|others?)$|^multiple_(girls|boys|others)$|^solo(_focus)?$|^no_humans$|^(male|female|other)_focus$|^everyone$|^crowd$|^people$|^genderswap|^trap$|^otoko_no_ko$|^androgynous$|^tomboy$"),
     ("人物", "年龄", r"^(mature|old|elderly|young|adult|child|toddler|teen|teenage|baby|kid)(_(female|male|man|woman|girl|boy))?$|^aged_|_age$|^age_|^milf$|^dilf$"),
@@ -136,7 +192,7 @@ RULES = [
     ("人物", "皮肤", r"_skin$|^skin_|^(dark|pale|tan|tanned|shiny|oily)_?skin|^tanlines?$|^tan$|^dark-skinned|^albino$|freckles|^body_fur$"),
     ("服饰", "发饰", r"hair_(ornament|ribbon|bow|flower|clip|band|pin|tie|bell|stick|bobbles|scrunchie|ring|tubes?|beads|rings|cuffs|bun_cover)|hairclip|hairband|hairpin|scrunchie|kanzashi|^headband$|_hairband$|_headband$|hairpods|^bun_cover$"),
     ("人物", "发色", r"^(%s)_hair$|_hair_color|^two-tone_hair$|^multicolored_hair|^gradient_hair$|^streaked_hair$|^colored_tips$|^colored_inner_hair$|^roots_\(hair\)$|^split-color_hair$|^dyed_" % COLORS),
-    ("人物", "发型", r"hair$|_hair_|^hair_|bangs|braid|ponytail|twintails?|sidelocks?|ahoge|bun($|_)|buns$|drill|hime_cut|bob_cut|pixie_cut|^updo|afro|mohawk|undercut|^bald|cowlick|forehead|parted|crew_cut|buzz_cut|_cut$|^one_side_up|^two_side_up|odango|antenna_hair|ringlets|curls?$|_bangs$|^hair$"),
+    ("人物", "发型", r"hair$|_hair_|^hair_|bangs|braid|ponytail|twintails?|sidelocks?|ahoge|bun($|_)|buns$|drill|hime_cut|bob_cut|pixie_cut|^updo|afro|mohawk|undercut|^bald(_|$)|cowlick|parted_(bangs|hair)|crew_cut|buzz_cut|_cut$|^one_side_up|^two_side_up|odango|antenna_hair|ringlets|curls?$|_bangs$|^hair$"),
     ("人物", "眼睛", r"_eyes?$|^eyes?_|eyeball|^heterochromia$|^one_eye_|^closed_eyes|^half-closed|^narrowed_eyes|^empty_eyes|^glowing_eye|^tsurime|^tareme|^jitome|^sanpaku|^eye_|_eye_|^@_@$"),
     ("人物", "瞳孔", r"pupils?$|_pupils_|^slit_|^symbol-shaped|^star-shaped_pupils|^heart-shaped_pupils|irises$|_iris$"),
     ("人物", "眉毛·睫毛", r"eyebrow|eyelash|^thick_eyebrows|^unibrow|^hikimayu"),
@@ -178,7 +234,6 @@ RULES = [
     ("表情动作", "表情", r"smile|smirk|grin|laugh|blush|crying|tears|^cry$|sad$|angry|anger|annoyed|embarrass|surprised|shocked|scared|nervous|confused|frown|pout|serious|expressionless|(^|_)happy$|^smug|^disgust|^despair|^sleepy|^tired|^bored|^shy|^excited|^scowl|^wince|^panicking|^worried|^jealous|^lonely|^determined|^naughty|^seductive|^evil|^crazy|^yandere|^tsundere|^kuudere|^:[^\s]*$|^;[^\s]*$|^[^a-z0-9]*[<>^@\-_=;:.oOxX3]+[^a-z]*$|^o_o$|^x_x$|^=_=$|^\^_\^$|^>_<$|^d:$|^xd$|^dx$|^uwu$|^owo$|_face$|^expression|^emotion|^facepalm|^sigh|^sweatdrop|^flustered|^gloom|^pale_face|^shaded_face|^turn_pale|^nose_blush|^ear_blush|^spoken_|^\?$|^!$|^!!$|^\.\.\.$"),
     ("表情动作", "手势", r"^v$|^double_v|_v$|^peace_sign|^thumbs?_|^ok_sign|^pointing|^finger_gun|^finger_heart|^heart_hands|_heart_hands|^salute|^waving|^wave$|^beckoning|^shushing|^middle_finger|^\\m/|^\\n/|^fist_|^clenched_hand|^open_hand|^claw_pose|^paw_pose|^rabbit_pose|^fox_shadow_puppet|^crossed_fingers|^pinky_|^index_finger_raised|^akanbe|^bunny_pose|^horns_pose|^steepled_fingers|^own_hands_|^hands_together|^praying|^fingers_together|^gesture|_gesture$|^shaka_sign|^l_|^w_|^money_gesture|^air_quotes|^cupping_hands"),
     ("表情动作", "多人互动", r"(^|_)hug(s|ging)?(_|$)|kiss|^holding_hands|^hand_holding|interlocked_fingers|^carrying|^piggyback|^princess_carry|^shoulder_carry|headpat|^patting|^petting|^lap_pillow|^sitting_on_(lap|person|shoulder)|^cheek-to-cheek|^face-to-face|^forehead-to-forehead|^back-to-back|^nose-to-nose|^eye_contact|^arm_around|^arms_around|^hand_on_another|^hands_on_another|_on_another's|another's_|^cuddling|^spooning|^embrac|^feeding|^teasing|^tickling|^poking|^slapping|^punching|^kicking|^fighting$|^battle$|^duel$|^sparring|^wrestling|^tug_of_war|^high_five|^handshake|^fist_bump|^pinky_swear|^leaning_on_person|^head_on_another|^couple|^date|^multiple_persona|^group_hug|^holding_another"),
-    ("表情动作", "拿着东西", r"^holding"),
     ("表情动作", "手臂动作", r"^arms?_|_arms?$|_arms?_|^arm$|^flexing|^reaching|^outstretched|^stretching|^crossed_arms|^v_arms|^airplane_arms|^shrug|^akimbo|^spread_arms|^raised_|^salute"),
     ("表情动作", "手部动作", r"^hands?_(?!fan)|_hands?$|_hand_|^hand$|^finger_|_fingers?$|^fingers_|^covering_|^clenched_|^grabbing|_grab$|^pinching|^tugging|^pulling|^touching|^scratching|^rubbing|^playing_with_own|^twirling|^adjusting|^tying|^untying|^wiping|^cupping|^palms?$|^palm_(?!tree)|^thumb_|^index_finger|^own_hands"),
     ("表情动作", "腿部动作", r"^legs?_|_legs?$|_legs?_|^knees?_|_knees?$|^kneeling|^sitting|^seiza|^wariza|^squatting|^crouching|^crossed_ankles|^indian_style|^lotus_position|^butterfly_sitting|^yokozuwari|^straddling|^kicking|^tiptoes|^on_one_knee|^standing_on_one_leg|^leg_|^foot_|^feet_|_feet$|_foot$|^toes_|^spread_legs|^m_legs|^split$|^splits"),
@@ -219,7 +274,7 @@ RULES = [
     ("物品", "运动·游戏", r"^ball$|_ball$|^ball_|^balls$|^soccer|^football|^baseball|^basketball|^volleyball|^tennis|^badminton|^golf|^bowling|^billiards|^pool_\(game\)|^table_tennis|^ping_pong|^hockey|^rugby|^cricket|^swimming$|^running_track|^track_and_field|^gymnastics|^figure_skating|^ice_skating|^skiing|^snowboard|^surfing|^surfboard|^boxing|^martial_arts|^karate|^judo|^kendo|^sumo|^wrestling|^fencing|^archery|^cycling|^sports|^sport$|^playing_sports|^racket|^bat_\(sports\)|^net$|^goal$|^trophy|^medal$|^jersey|^chess|^shogi|^go_\(board_game\)|^mahjong|^playing_card|^card$|^cards$|^tarot|^dice|^board_game|^video_game|^playing_games|^gaming|^arcade_|^crane_game|^jigsaw|^puzzle|^rubik|^jenga|^kendama|^yo-yo|^kite|^jump_rope|^hula_hoop|^frisbee|^water_gun|^toy_|^toy$|^game$|^gacha|^lottery|^pachinko|^slot_machine|^casino|^poker|^roulette"),
     ("物品", "其他物品", r"^book$|^books$|_book$|^book_|^open_book|^notebook|^diary|^paper$|_paper$|^paper_|^scroll$|^letter_|^envelope|^card$|^umbrella|^parasol|^bag$|_bag$|^bag_|^backpack|^handbag|^purse|^wallet|^suitcase|^luggage|^briefcase|^box$|_box$|^box_|^basket|^bucket|^barrel|^crate|^jar$|^bottle$|^vase|^candle|^lantern|^lamp|^torch$|^flashlight|^key$|^keys$|^lock$|^padlock|^chain$|^rope$|^string|^thread|^yarn|^needle|^scissors|^pen$|^pencil|^brush|^paintbrush|^palette|^easel|^canvas|^ruler|^eraser|^glue|^tape$|^stapler|^clipboard|^calendar_\(object\)|^map$|^globe$|^compass|^telescope|^binoculars|^magnifying_glass|^hourglass|^pocket_watch|^clock|^alarm_clock|^mirror|^comb$|^hairbrush|^towel|^soap|^toothbrush|^toothpaste|^shampoo|^cigarette|^cigar|^pipe$|^smoking_pipe|^lighter|^ashtray|^coin|^money|^banknote|^gold_bar|^treasure|^crystal$|^crystals|^orb$|^jewel$|^potion|^vial|^flask|^test_tube|^syringe|^pill$|^pills|^medicine|^bandage|^bandaid|^band-aid|^first_aid|^stethoscope|^doll$|_doll$|^dolls$|^stuffed_|^plush|^teddy_bear|^figure$|^figurine|^statue|^sculpture|^mask_\(object\)|^balloon|^gift|^present|^ribbon_\(object\)|^bell_\(object\)|^wind_chime|^fan$|^hand_fan|^folding_fan|^paper_fan|^uchiwa|^sensu|^flag$|^banner$|^sign$|^poster_\(object\)|^photo_\(object\)|^picture_frame|^frame_\(object\)|^trophy|^ticket|^charm_\(object\)|^omamori|^ofuda|^ema$|^tanzaku|^gohei|^rosary|^cross$|^bible|^grimoire|^spellbook|^tarot|^card_\(object\)|^ball_\(object\)|^cushion|^pillow|^blanket|^sleeping_bag|^tent|^bench|^ladder|^tool|_tool$|^wrench|^screwdriver|^hammer_\(tool\)|^saw$|^shovel|^pickaxe|^broom|^mop$|^vacuum|^trash|^garbage|^cardboard_box|^shopping_bag|^plastic_bag|^paper_bag|^bento_box|^watering_can|^hose$|^fishing_rod|^net_\(object\)|^cage$|^birdcage|^aquarium|^fishbowl|^snow_globe|^music_box|^jack-in-the-box|^rattle|^pacifier|^diaper|^bottle_\(baby\)|^cradle"),
 ]
-RULES = [(g, s, re.compile(p)) for g, s, p in RULES]
+RULES = [(g, s, words(p)) for g, s, p in RULES]
 
 # ---------- Danbooru tag-group sections ----------
 # page -> default (大类, 子类) or None to ignore, plus [(heading substring, category)] checked first.
@@ -386,6 +441,8 @@ def simplified(alias):
 
 
 def classify(tag):
+    if tag in OVERRIDES:
+        return OVERRIDES[tag]
     if R18_WORDS.search(tag):
         return "R18", next(n for n, p in R18_SUB if p.search(tag))
     for g, s, p in RULES:
@@ -396,14 +453,6 @@ def classify(tag):
 
 # ---------- 画风 ----------
 # The rules above sort style words into 画面/艺术风格 and colors into 画面/颜色; they are split into 画风 here.
-STYLE_FIX = {
-    "manga_(object)": ("物品", "其他物品"), "sketchbook": ("物品", "其他物品"), "inkwell": ("物品", "其他物品"),
-    "pencil_case": ("物品", "其他物品"), "cartoon_bone": ("物品", "其他物品"), "flat_screen_tv": ("物品", "电子设备"),
-    "nihongami": ("人物", "发型"), "ink_tank_(splatoon)": ("其他", "作品相关"), "inkbrush_(splatoon)": ("其他", "作品相关"),
-    "flat_chest_joke": ("其他", "网络梗"), "inktober": ("其他", "网络梗"), "flat_sign": ("画面", "文字·符号"),
-    "manga_cover": ("画面", "媒介·格式"), "pale_color": ("画风", "色调"), "official_style": ("画风", "艺术流派·主题"),
-    "toon_(style)": ("画风", "艺术流派·主题"), "western_comics_(style)": ("画风", "艺术流派·主题"), "pinup_(style)": ("画风", "艺术流派·主题"),
-}
 DECADE = re.compile(r"^(\d{4}s_\(style\)|pc-98_\(style\)|retro_artstyle|heisei_retro|showa_\(style\))$")
 PARODY = re.compile(r"parody$")
 PAINT_MEDIUM = re.compile(r"^(watercolor|marker|pastel|oil_painting|acrylic_paint|gouache|ballpoint_pen|graphite|charcoal|colored_pencil|"
@@ -416,8 +465,6 @@ CHIBI = {"chibi", "chibi_only", "super_deformed", "deformed"}
 
 
 def restyle(tag, cat):
-    if tag in STYLE_FIX:
-        return STYLE_FIX[tag]
     if DECADE.search(tag):
         return "画风", "年代风格"
     if tag.endswith("_(style)") and cat[0] != "R18":
@@ -460,7 +507,7 @@ def main():
         else:
             c = classify(tag) or (dan[tag][0] if dan.get(tag) else None)
             c = c or (("其他", "作品相关") if SERIES_SUFFIX.search(tag) else ("其他", "未分类"))
-            cats[restyle(tag, c)].append(item)
+            cats[OVERRIDES.get(tag) or restyle(tag, c)].append(item)
 
     # Small character series fold into 其他角色.
     for (g, s) in list(cats):

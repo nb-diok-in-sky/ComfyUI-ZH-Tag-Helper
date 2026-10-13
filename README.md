@@ -54,7 +54,8 @@ python tools/build_zh_tags.py           # 合并中文翻译、标违禁词 -> t
 python tools/build_tag_categories.py    # 分类 -> web/tag_categories.json
 ```
 
-- 翻译表里没有中文的词，手工翻译在 `tools/zh_extra.tsv`。
+- 手工翻译在 `tools/zh_extra.tsv`：补翻译表缺的中文，也用来改正翻错的（优先于翻译表）。
+- 分错类的词写进 `tools/overrides.tsv`（`英文标签<TAB>大类/子类`），重新跑一遍即可。
 - 违禁词规则在 `tools/build_zh_tags.py`，分类规则在 `tools/build_tag_categories.py`。
 
 ## 数据来源

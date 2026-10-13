@@ -1,4 +1,4 @@
-# 手工补的中文（tag<TAB>中文，多个别名用、隔开）。build_zh_tags.py 读取，仅在翻译表里没有中文时使用。
+# 手工中文（tag<TAB>中文，多个别名用、隔开，别用 ; / , 这类分隔符）。build_zh_tags.py 读取，优先于翻译表：用来补缺失的翻译、改正错误的翻译。
 :d	张嘴笑（:D表情）
 black_footwear	黑色鞋子
 hololive	Hololive（虚拟主播事务所）
@@ -76,7 +76,7 @@ project_voltage	Project VOLTAGE（宝可梦×初音）
 ribbed_legwear	罗纹袜
 sleeveless_turtleneck_leotard	无袖高领紧身衣
 little_busters!	Little Busters!
-;3	眨眼猫嘴（;3表情）
+;3	眨眼猫嘴（颜文字）
 gumi	GUMI（VOCALOID）
 blue_brooch	蓝色胸针
 u_u	闭眼（u_u表情）
@@ -86,7 +86,7 @@ pixiv_id	Pixiv ID水印
 new_game!	New Game!
 x	X符号
 argyle_legwear	菱格纹袜子
-bb_(fate/extra)	BB（Fate/EXTRA）
+bb_(fate/extra)	BB（Fate EXTRA）
 fate/samurai_remnant	Fate/Samurai Remnant
 holostars	Holostars（男性虚拟主播组）
 bemani	BEMANI（科乐美音游）
@@ -109,7 +109,7 @@ twitter	推特（Twitter）
 voicevox	VOICEVOX（语音合成）
 va-11_hall-a	VA-11 Hall-A（赛博朋克调酒师）
 39	39（初音谐音）
-heaven's_feel	Heaven's Feel（Fate/stay night 樱线）
+heaven's_feel	Heaven's Feel（Fate stay night 樱线）
 vrchat	VRChat
 alear_(fire_emblem)	琉尔（火焰纹章Engage）
 aegis_(persona)	埃癸斯（女神异闻录3）
@@ -224,7 +224,7 @@ gridman_universe_(film)	古立特宇宙（剧场版）
 white_stripes	白色条纹
 honey_strap	Honey Strap（虚拟主播团体）
 ipod	iPod
-22/7	22/7（偶像企划）
+22/7	22 7（偶像企划）
 electric_bass_guitar	电贝斯
 black_pasties	黑色乳贴
 unworn_footwear	没穿着的鞋（放一旁）
@@ -287,13 +287,13 @@ pixiv_fantasia_last_saga	Pixiv Fantasia Last Saga
 chattino_(raora_panthera)	Chattino（Raora Panthera）
 holding_baby	抱着婴儿
 morgan_(fire_emblem)	玛克（火焰纹章）
-assassin_(fate/zero)	Assassin（Fate/Zero）
+assassin_(fate/zero)	Assassin（Fate Zero）
 star_ocean_till_the_end_of_time	星之海洋3
 black_bikini_bottom	黑色比基尼下装
 aldnoah.zero	ALDNOAH.ZERO
 re:creators	Re:CREATORS
 just_shoes	只穿着鞋子
-f-ism	F-ism（漫画家/社团）
+f-ism	F-ism（漫画家社团）
 bars	栏杆、铁栏
 v4x	V4X（VOCALOID）
 eotech	EOTech瞄准镜
@@ -359,7 +359,7 @@ modern_mogal	Modern MoGal（偶像企划）
 red_blindfold	红色眼罩
 artoria_pendragon_(lancer_alter)_(royal_icing)_(fate)	阿尔托莉雅·Lancer Alter·皇家糖霜（Fate）
 shuffle!	SHUFFLE!
-;<	眨眼噘嘴（;<表情）
+;<	眨眼噘嘴（颜文字）
 idol_corp	idol Corp（虚拟主播事务所）
 kooh	库（Pani Poni）
 m16a1	M16A1步枪
@@ -401,7 +401,7 @@ lace_legwear	蕾丝袜
 dj	DJ
 h&k_mp5	MP5冲锋枪
 uni_create	uni create（虚拟主播事务所）
-d;	惊恐（D;表情）
+d;	惊恐脸（颜文字）
 shirakami_fubuki_(aristocrat_kei)	白上吹雪·贵族造型（Hololive）
 face_grab	抓着脸
 bao_(vtuber)	Bao（虚拟主播）
@@ -434,7 +434,7 @@ double-blade	双刃
 purple_brooch	紫色胸针
 4chan	4chan
 noss_(rariatto)	Noss（rariatto原创角色）
-;t	眨眼噘嘴（;t表情）
+;t	眨眼嘟嘴（颜文字）
 perroccino_(fuwamoco)	Perroccino（FUWAMOCO）
 sleeveless_turtleneck_dress	无袖高领连衣裙
 cat_panties	猫咪内裤
@@ -468,7 +468,7 @@ ayaya~	Ayaya~（射命丸文梗）
 =_hair_ornament	等号发饰
 lcl	LCL（EVA）
 sound_horizon	Sound Horizon（乐队）
-sig_p220/p226	SIG P220/P226手枪
+sig_p220/p226	SIG P220手枪
 iosys	IOSYS（同人音乐社团）
 sig_mcx	SIG MCX步枪
 pornhub	Pornhub
@@ -525,7 +525,7 @@ folding_stock	折叠枪托
 removing_legwear	正在脱袜子
 tsunderia	Tsunderia（虚拟主播事务所）
 frutiger_aero	Frutiger Aero（千禧年科技美学）
-mac-10/11	MAC-10/11冲锋枪
+mac-10/11	MAC-10冲锋枪
 shoto_(vtuber)	Shoto（虚拟主播）
 l85	L85步枪
 magnet_(vocaloid)	Magnet（VOCALOID曲）
@@ -625,7 +625,7 @@ comiket_97	Comiket 97（漫展）
 h&k_usp	USP手枪
 sapling_(ceres_fauna)	Sapling（塞莱斯·法娜）
 cuddly_octopus	Cuddly Octopus（同人社团）
-3;	委屈猫嘴（3;表情）
+3;	委屈猫嘴（颜文字）
 comic_penguin_club	COMIC Penguin Club（成人杂志）
 triple_scoop	三球冰淇淋
 aks-74u	AKS-74U步枪
@@ -773,7 +773,7 @@ huniepop	HuniePop
 windows_95	Windows 95
 propro_production	ProPro Production（虚拟主播事务所）
 odds_&_ends_(vocaloid)	ODDS&ENDS（VOCALOID曲）
-;|	眨眼抿嘴（;|表情）
+;|	眨眼抿嘴（颜文字）
 arin	Arin（原创角色）
 un-go	UN-GO
 lovely_x_cation_2	LOVELY×CATION 2
@@ -1083,3 +1083,8 @@ onee-loli	姐萝
 white_headphones	白色耳机
 sitting_on_tree_stump	坐在树桩上
 chocolate_doughnut	巧克力甜甜圈
+
+# --- 上游翻译有误，手工改正（优先于翻译表）
+completely_nude	全裸
+forehead	额头
+fingernails	指甲
