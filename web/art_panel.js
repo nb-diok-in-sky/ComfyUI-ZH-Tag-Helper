@@ -5,6 +5,7 @@
 //  - 提示词分类：中文词库按 大类 / 子类 浏览（tag_browser.js），点击插入。
 import { app } from "../../scripts/app.js";
 import { buildTagBrowser } from "./tag_browser.js";
+import { getHighlightSettings, setHighlightSettings } from "./tag_highlight.js";
 import { insertIntoBox, isSidePanelEnabled, setSidePanelEnabled } from "./tag_side_panel.js";
 
 const SAMPLERS = new Set(["KSampler", "KSamplerAdvanced"]);
@@ -244,6 +245,28 @@ function render(container) {
     check.onchange = () => setSidePanelEnabled(check.checked);
     label.append(check, "点进提示词框时，在旁边弹出分类面板");
     box.appendChild(label);
+
+    const hl = getHighlightSettings();
+    const hlLabel = el("label", { display: "flex", gap: "6px", alignItems: "center", fontSize: "13px", cursor: "pointer" });
+    const hlCheck = el("input");
+    hlCheck.type = "checkbox";
+    hlCheck.checked = hl.on;
+    hlLabel.append(hlCheck, "提示词按分类上色");
+    const slideRow = el("div", { display: "flex", gap: "6px", alignItems: "center", fontSize: "13px" });
+    const slider = el("input", { flex: "1" });
+    Object.assign(slider, { type: "range", min: "5", max: "60", step: "1", value: String(Math.round(hl.alpha * 100)) });
+    const pct = el("span", { width: "36px", textAlign: "right" }, slider.value + "%");
+    slideRow.append(el("span", null, "颜色深浅"), slider, pct);
+    slider.disabled = !hl.on;
+    hlCheck.onchange = () => {
+        slider.disabled = !hlCheck.checked;
+        setHighlightSettings({ on: hlCheck.checked });
+    };
+    slider.oninput = () => {
+        pct.textContent = slider.value + "%";
+        setHighlightSettings({ alpha: Number(slider.value) / 100 });
+    };
+    box.append(hlLabel, slideRow);
     container.appendChild(box);
 }
 

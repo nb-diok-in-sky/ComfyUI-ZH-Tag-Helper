@@ -2,7 +2,7 @@
 // 词库就是 tag_categories.json（和分类面板共用），违禁词同样标红并在插入时提醒。
 // 中文输入法组字期间不搜索，上屏（compositionend）后再搜。
 import { app } from "../../scripts/app.js";
-import { BAN_STYLE, BAN_TIP, loadTags, toPrompt } from "./tag_browser.js";
+import { BAN_STYLE, BAN_TIP, loadTags, onTagsChanged, toPrompt } from "./tag_data.js";
 
 const LIMIT = 30;
 const MARKS = /^(🚫违禁词·|⚠违禁词·仅全年龄·)/;
@@ -116,7 +116,7 @@ function render() {
         if (ban) row.title = BAN_TIP[ban][0];
         row.appendChild(el("span", { flexShrink: "0" }, zh || tag));
         row.appendChild(el("span", { flex: "1", opacity: "0.6", fontSize: "12px", wordBreak: "break-all" }, tag));
-        row.appendChild(el("span", { opacity: "0.5", fontSize: "11px" }, shortCount(count)));
+        row.appendChild(el("span", { opacity: "0.5", fontSize: "11px" }, t[5] ? "★自定义" : shortCount(count)));
         row.onmouseenter = () => {
             active = i;
             for (const [j, c] of [...box.children].entries()) c.style.background = j === i ? "rgba(255,255,255,0.12)" : "";
@@ -170,7 +170,9 @@ function accept(i) {
 app.registerExtension({
     name: "local.ZhTagAutocomplete",
     setup() {
-        loadTags().then((data) => (index = buildIndex(data))).catch(() => {});
+        const reload = () => loadTags().then((data) => (index = buildIndex(data))).catch(() => {});
+        onTagsChanged(reload);
+        reload();
         document.addEventListener("input", (e) => {
             if (isPromptBox(e.target) && !e.isComposing) update(e.target);
         }, true);

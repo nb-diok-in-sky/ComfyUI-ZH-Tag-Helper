@@ -67,7 +67,7 @@ export function insertIntoBox(ta, tag, refocus = false) {
 
 function insertAtCursor(tag) {
     if (!target?.isConnected) return;
-    // 正在用面板的搜索框打字时，焦点留在搜索框
+    // 正在面板的搜索框或表单里打字时，焦点留在那里
     const searching = document.activeElement instanceof HTMLInputElement && panel.contains(document.activeElement);
     insertIntoBox(target, tag, !searching);
 }
@@ -93,10 +93,10 @@ function build() {
     Object.assign(box.style, { flex: "1", minHeight: "0", display: "flex", flexDirection: "column" });
     root.append(head, box);
     buildTagBrowser(box, insertAtCursor, toast, true);
-    // 只有搜索框需要焦点，其余地方按下鼠标时保住提示词框的光标。
+    // 只有搜索框和自定义词表单需要焦点，其余地方按下鼠标时保住提示词框的光标。
     // e.target === root 时是右下角的缩放把手，不能拦。
     root.addEventListener("mousedown", (e) => {
-        if (e.target !== root && !(e.target instanceof HTMLInputElement)) e.preventDefault();
+        if (e.target !== root && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement)) e.preventDefault();
     });
     root.addEventListener("mouseup", () => save(SIZE_KEY, { w: root.offsetWidth, h: root.offsetHeight }));
     document.body.appendChild(root);

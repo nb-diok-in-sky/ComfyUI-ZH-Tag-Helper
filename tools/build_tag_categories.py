@@ -32,7 +32,8 @@ ORDER = {
              "花纹·材质", "衣着状态"],
     "表情动作": ["表情", "视线", "基础姿势", "手臂动作", "手部动作", "手势", "拿着东西", "腿部动作", "多人互动", "其他动作"],
     "镜头": ["景别", "角度", "构图", "焦点"],
-    "画面": ["画质·元数据", "艺术风格", "媒介·格式", "光照", "颜色", "背景", "特效", "文字·符号"],
+    "画面": ["画质·元数据", "媒介·格式", "光照", "背景", "特效", "文字·符号"],
+    "画风": ["艺术流派·主题", "画法·媒介", "年代风格", "画师·作品画风", "恶搞·模仿", "色调"],
     "环境": ["季节·节日", "天气·时间", "天空", "水·冰·火", "植物·花"],
     "场景": ["室内", "户外·自然", "户外·城市", "建筑", "家具·门窗", "现实地点"],
     "物品": ["武器", "食物·饮料", "动物", "神话生物", "交通工具", "乐器·音乐", "电子设备", "运动·游戏", "其他物品"],
@@ -393,6 +394,49 @@ def classify(tag):
     return None
 
 
+# ---------- 画风 ----------
+# The rules above sort style words into 画面/艺术风格 and colors into 画面/颜色; they are split into 画风 here.
+STYLE_FIX = {
+    "manga_(object)": ("物品", "其他物品"), "sketchbook": ("物品", "其他物品"), "inkwell": ("物品", "其他物品"),
+    "pencil_case": ("物品", "其他物品"), "cartoon_bone": ("物品", "其他物品"), "flat_screen_tv": ("物品", "电子设备"),
+    "nihongami": ("人物", "发型"), "ink_tank_(splatoon)": ("其他", "作品相关"), "inkbrush_(splatoon)": ("其他", "作品相关"),
+    "flat_chest_joke": ("其他", "网络梗"), "inktober": ("其他", "网络梗"), "flat_sign": ("画面", "文字·符号"),
+    "manga_cover": ("画面", "媒介·格式"), "pale_color": ("画风", "色调"), "official_style": ("画风", "艺术流派·主题"),
+    "toon_(style)": ("画风", "艺术流派·主题"), "western_comics_(style)": ("画风", "艺术流派·主题"), "pinup_(style)": ("画风", "艺术流派·主题"),
+}
+DECADE = re.compile(r"^(\d{4}s_\(style\)|pc-98_\(style\)|retro_artstyle|heisei_retro|showa_\(style\))$")
+PARODY = re.compile(r"parody$")
+PAINT_MEDIUM = re.compile(r"^(watercolor|marker|pastel|oil_painting|acrylic_paint|gouache|ballpoint_pen|graphite|charcoal|colored_pencil|"
+                          r"crayon|ink|millipen|nib_pen|pencil|brush|copic|airbrush|painting|traditional_media)_\(medium\)$")
+TECHNIQUE = re.compile(r"^(sketch|sketching|lineart|line_art|colored_lineart|outline|ligne_claire|pencil|colored_pencil|ink|inkblot|ink_stamp|"
+                       r"ink_wash_painting|crayon|impasto|pixel_art|low_poly|3d|anime_coloring|cel_shading|flat_color|faux_traditional_media|"
+                       r"traditional_media|watercolor_effect|watercolor|oil_painting|painterly|blending|no_lineart|thick_lineart|"
+                       r"monochrome_lineart|digital_media_\(artwork\))$")
+CHIBI = {"chibi", "chibi_only", "super_deformed", "deformed"}
+
+
+def restyle(tag, cat):
+    if tag in STYLE_FIX:
+        return STYLE_FIX[tag]
+    if DECADE.search(tag):
+        return "画风", "年代风格"
+    if tag.endswith("_(style)") and cat[0] != "R18":
+        return "画风", "画师·作品画风"
+    if PAINT_MEDIUM.search(tag):
+        return "画风", "画法·媒介"
+    if cat in (("画面", "颜色"), ("画面", "艺术风格")) and TECHNIQUE.search(tag):
+        return "画风", "画法·媒介"
+    if cat == ("画面", "颜色"):
+        return "画风", "色调"
+    if tag in CHIBI:
+        return "画风", "艺术流派·主题"
+    if cat != ("画面", "艺术风格"):
+        return cat
+    if PARODY.search(tag):
+        return "画风", "恶搞·模仿"
+    return "画风", "艺术流派·主题"
+
+
 def main():
     rows = [r for r in csv.reader(open(SRC, encoding="utf-8")) if len(r) >= 4]
     general = {r[0] for r in rows if r[1] == "0"}
@@ -416,7 +460,7 @@ def main():
         else:
             c = classify(tag) or (dan[tag][0] if dan.get(tag) else None)
             c = c or (("其他", "作品相关") if SERIES_SUFFIX.search(tag) else ("其他", "未分类"))
-            cats[c].append(item)
+            cats[restyle(tag, c)].append(item)
 
     # Small character series fold into 其他角色.
     for (g, s) in list(cats):
