@@ -1,0 +1,8 @@
+[project]
+name = "comfyui-zh-tag-helper"
+description = "Chinese Danbooru tag autocomplete, categorized tag panel, banned-tag markers and tag counter for ComfyUI prompt boxes."
+version = "1.0.0"
+license = { file = "LICENSE" }
+
+[tool.comfy]
+DisplayName = "ZH Tag Helper 中文标签助手"

@@ -1,0 +1,7 @@
+__pycache__/
+# Raw sources and intermediate files, recreated by tools/fetch_sources.py and tools/build_zh_tags.py
+tools/sources/
+tools/build/
+# Optional local add-ons, not part of this repo
+explorer/
+lora_styles/
