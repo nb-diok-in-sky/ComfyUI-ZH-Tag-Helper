@@ -1,6 +1,14 @@
 # ComfyUI-ZH-Tag-Helper 中文标签助手
 
-给 ComfyUI 提示词框用的中文 Danbooru 标签工具。纯前端，不加节点，不装 Python 依赖，运行时不联网。
+给 ComfyUI 提示词框用的中文 Danbooru 标签工具：打中文出英文标签、鼠标悬停看中文、按分类点选标签。纯前端，不加节点，不装 Python 依赖，运行时不联网。
+
+![鼠标悬停看中文](docs/images/hover.png)
+
+| 提示词按分类上色 | 打中文出候选 |
+| --- | --- |
+| ![提示词按分类上色](docs/images/colors.png) | ![打中文出候选](docs/images/autocomplete.png) |
+
+![分类面板](docs/images/panel.png)
 
 ## 功能
 
@@ -21,12 +29,16 @@
 
 ## 安装
 
-```
-cd ComfyUI/custom_nodes
-git clone https://github.com/nb-diok-in-sky/ComfyUI-ZH-Tag-Helper.git
-```
+三种方法任选一种，装完重启 ComfyUI 并刷新浏览器。词库 `web/tag_categories.json` 已经生成好，不用额外下载。
 
-重启 ComfyUI，浏览器刷新。词库 `web/tag_categories.json` 已经生成好，不用额外下载。
+- **ComfyUI-Manager**：Manager → Install via Git URL，填 `https://github.com/nb-diok-in-sky/ComfyUI-ZH-Tag-Helper.git`。
+- **git**：
+  ```
+  cd ComfyUI/custom_nodes
+  git clone https://github.com/nb-diok-in-sky/ComfyUI-ZH-Tag-Helper.git
+  ```
+  以后更新：在插件文件夹里 `git pull`。
+- **不会用 git**：本页右上角 Code → Download ZIP，解压后把文件夹整个放进 `ComfyUI/custom_nodes/`。
 
 **和 ComfyUI-Autocomplete-Plus 二选一**：两个同时开，打字时会出现两个补全框。本插件已经包含中文补全，建议停用 Autocomplete-Plus（把它的文件夹移出 `custom_nodes` 即可）。
 
@@ -43,7 +55,7 @@ git clone https://github.com/nb-diok-in-sky/ComfyUI-ZH-Tag-Helper.git
 ```
 
 违禁级别：`2` = 🚫 绝对禁用（正向提示词任何时候都不能用），`1` = ⚠ 仅全年龄（正向里有 nsfw / explicit / sensitive 时不能用），`0` = 可用。
-让 AI 帮忙写提示词时，可以直接读这个字段过滤。
+
 
 自定义词 `user/default/zh_tag_helper_custom.json`：`[{"tag": "my_lora_trigger", "zh": "我的画风", "group": "画风", "sub": "LoRA 触发词"}]`。改的是内置词时，原有的违禁级别保持不变。
 
@@ -59,6 +71,10 @@ python tools/build_tag_categories.py    # 分类 -> web/tag_categories.json
 - 分错类的词写进 `tools/overrides.tsv`（`英文标签<TAB>大类/子类`），重新跑一遍即可。
 - 想让 AI 帮忙逐类检查：`python tools/review_export.py` 导出清单，把 [docs/AI_REVIEW_GUIDE.md](docs/AI_REVIEW_GUIDE.md) 交给它；做完用 `python tools/review_check.py` 检查格式后人工审核合并。
 - 违禁词规则在 `tools/build_zh_tags.py`，分类规则在 `tools/build_tag_categories.py`。
+
+## 反馈
+
+发现分错类、翻错的词，或者遇到 bug，请到 [Issues](https://github.com/nb-diok-in-sky/ComfyUI-ZH-Tag-Helper/issues) 提出：写上英文标签、现在的分类或中文、应该是什么。bug 请附截图和浏览器 F12 → Console 里的红色报错。
 
 ## 数据来源
 
