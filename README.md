@@ -80,6 +80,10 @@ python tools/build_tag_categories.py    # 分类 -> web/tag_categories.json
 
 标签与热度来自 newtextdoc1111/danbooru-tag-csv（MIT），中文翻译来自 ffdkj 的 Danbooru 中英对照表（MIT），分类参考 Danbooru wiki 的 Tag group 页面。详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+## 免责声明
+
+词库来自公开的 Danbooru 标签数据，包含部分成人向标签，仅供学习研究。本插件只提供标签的翻译、分类和补全，不包含也不生成任何图片。使用者需自行遵守所在地法律法规，作者不对使用本插件生成的内容负责。
+
 ## 许可证
 
 MIT © nb-diok-in-sky
